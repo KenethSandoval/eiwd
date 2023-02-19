@@ -22,10 +22,13 @@ static void RenderSceneCB() {
 }
 
 static void CreateVertexBuffer() {
+  glEnable(GL_CULL_FACE);
+  glFrontFace(GL_CW);
+  glCullFace(GL_FRONT);
   Vector3f Vertices[3];
   Vertices[0] = Vector3f(-1.0f, -1.0f, 0.0f); // bottom left
-  Vertices[1] = Vector3f(0.0f, 1.0f, 0.0f); // top
-  Vertices[2] = Vector3f(1.0f, -1.0f, 0.0f); // bottom right
+  Vertices[1] = Vector3f(1.0f, -1.0f, 0.0f); // bottom right
+  Vertices[2] = Vector3f(0.0f, 1.0f, 0.0f); // top
 
   glGenBuffers(1, &VB0);
   glBindBuffer(GL_ARRAY_BUFFER, VB0);
