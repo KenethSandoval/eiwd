@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <GL/ogdev_util.h>
 #include <GL/math3d.h>
+#include <GL/ogdev_util/ogdev_util.h>
 
 GLuint VB0;
 
@@ -15,7 +15,7 @@ static void RenderSceneCB() {
 
   glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -27,15 +27,16 @@ static void RenderSceneCB() {
 static void CreateVertexBuffer() {
   Vector3f Vertices[3];
   Vertices[0] = Vector3f(-1.0f, -1.0f, 0.0f); // bottom left
-  Vertices[1] = Vector3f(1.0f, -1.0f, 0.0f); // bottom right
-  Vertices[2] = Vector3f(0.0f, 1.0f, 0.0f); // top
+  Vertices[1] = Vector3f(1.0f, -1.0f, 0.0f);  // bottom right
+  Vertices[2] = Vector3f(0.0f, 1.0f, 0.0f);   // top
 
   glGenBuffers(1, &VB0);
   glBindBuffer(GL_ARRAY_BUFFER, VB0);
   glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 }
 
-static void AddShader(GLuint ShaderProgram, const char *pShaderText, GLenum ShaderType) {
+static void AddShader(GLuint ShaderProgram, const char *pShaderText,
+                      GLenum ShaderType) {
   GLuint ShaderObj = glCreateShader(ShaderType);
 
   if (ShaderObj == 0) {
@@ -56,43 +57,44 @@ static void AddShader(GLuint ShaderProgram, const char *pShaderText, GLenum Shad
   GLint success;
   glGetShaderiv(ShaderObj, GL_COMPILE_STATUS, &success);
 
-  if(!success) {
+  if (!success) {
     GLchar InfoLog[1024];
     glGetShaderInfoLog(ShaderObj, 1024, NULL, InfoLog);
-    fprintf(stderr, "Error compiling shader type %d: '%s'\n", ShaderType, InfoLog);
+    fprintf(stderr, "Error compiling shader type %d: '%s'\n", ShaderType,
+            InfoLog);
     exit(1);
   }
 
   glAttachShader(ShaderProgram, ShaderObj);
 }
 
-const char* pVSFileName = "shader.vs";
-const char* pFSFileName = "shader.fs";
+const char *pVSFileName = "shader.vs";
+const char *pFSFileName = "shader.fs";
 
 static void CompileShaders() {
   GLuint ShaderProgram = glCreateProgram();
 
-  if(ShaderProgram == 0) {
+  if (ShaderProgram == 0) {
     fprintf(stderr, "Error creating shader program\n");
     exit(1);
   }
 
   std::string vs, fs;
 
-  if(!ReadFile(pVSFileName, vs)) {
+  if (!ReadFile(pVSFileName, vs)) {
     exit(1);
   }
 
   AddShader(ShaderProgram, vs.c_str(), GL_VERTEX_SHADER);
 
-  if(!ReadFile(pFSFileName, fs)) {
+  if (!ReadFile(pFSFileName, fs)) {
     exit(1);
   }
-  
+
   AddShader(ShaderProgram, fs.c_str(), GL_FRAGMENT_SHADER);
 
   GLint Success = 0;
-  GLchar ErrorLog[1024] = { 0 };
+  GLchar ErrorLog[1024] = {0};
 
   glLinkProgram(ShaderProgram);
 
@@ -105,7 +107,7 @@ static void CompileShaders() {
 
   glValidateProgram(ShaderProgram);
   glGetProgramiv(ShaderProgram, GL_VALIDATE_STATUS, &Success);
-  if(!Success) {
+  if (!Success) {
     glGetProgramInfoLog(ShaderProgram, sizeof(ErrorLog), NULL, ErrorLog);
     fprintf(stderr, "Invalid shader program: '%s'\n", ErrorLog);
     exit(1);
@@ -113,31 +115,30 @@ static void CompileShaders() {
   glUseProgram(ShaderProgram);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA); 
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 
   int width = 1920;
   int height = 1080;
   glutInitWindowSize(width, height);
 
-  int x =  200;
-  int y =  100;
+  int x = 200;
+  int y = 100;
   glutInitWindowPosition(x, y);
   int win = glutCreateWindow("Tutorial 03");
   printf("window id: %d\n", win);
- 
-	GLenum res = glewInit();
-	if (res != GLEW_OK) {
-		fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
-		return 1;
-	}
 
-	GLclampf Red = 0.0f, Green = 0.0f, Blue = 0.0f, Alpha = 0.0f;
-	glClearColor(Red, Green, Blue, Alpha);
+  GLenum res = glewInit();
+  if (res != GLEW_OK) {
+    fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
+    return 1;
+  }
 
-	CreateVertexBuffer();
+  GLclampf Red = 0.0f, Green = 0.0f, Blue = 0.0f, Alpha = 0.0f;
+  glClearColor(Red, Green, Blue, Alpha);
+
+  CreateVertexBuffer();
 
   CompileShaders();
 

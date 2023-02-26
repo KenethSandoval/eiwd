@@ -8,7 +8,7 @@ SOURCES=$(wildcard *.cpp)
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LDLIBS)
+	$(CC) $(LDFLAGS) $(OBJECTS) /usr/include/GL/ogdev_util/ogdev_util.a -o $@ $(LDLIBS) 
 
 clean:
 	$(RM) $(OBJECTS) $(TARGET)
